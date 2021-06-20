@@ -1,28 +1,48 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <app-header
+      @change="pure = !pure"
+      :style="{ marginBottom: pure ? '20px' : 0 }"
+    />
+    <f-render
+      @save="handleSave"
+      :loading="loading"
+      height="calc(100vh - 150px)"
+      :config="formConfig"
+      v-model="formData"
+      :pure="pure"
+      :options-fn="$axios.get"
+    />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import AppHeader from "./AppHeader";
 
 export default {
-  name: 'App',
   components: {
-    HelloWorld
+    AppHeader
+  },
+  data() {
+    return {
+      loading: false,
+      formConfig: "",
+      formData: {},
+      pure: false
+    };
+  },
+  methods: {
+    handleSave(res) {
+      localStorage.setItem("form-config", res);
+      this.$message.success("保存成功啦~");
+    }
+  },
+  mounted() {
+    this.loading = true;
+    setTimeout(() => {
+      this.loading = false;
+      this.formConfig = localStorage.getItem("form-config") || "";
+    }, 1000);
   }
-}
+};
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
